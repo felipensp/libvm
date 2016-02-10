@@ -39,12 +39,17 @@ int vm_get_temp(vm_env *env)
 	return env->temps_count++;
 }
 
-vm_value *vm_get_temp_value(vm_env *env, int id)
+int vm_get_last_temp(vm_env *env)
+{
+	return env->temps_count - 1;
+}
+
+static inline vm_value *vm_get_temp_value(vm_env *env, int id)
 {
 	return &env->temps[id];
 }
 
-int vm_get_op_value(const vm_env *env, const vm_operand *op)
+static inline int vm_get_op_value(const vm_env *env, const vm_operand *op)
 {
 	switch (op->type) {
 	case CPOOL:

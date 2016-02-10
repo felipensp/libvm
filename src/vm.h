@@ -88,5 +88,6 @@ void vm_init(vm_env*);
 int vm_add_const(vm_env*, int, void*);
 int vm_add_inst(vm_env*, vm_inst);
 int vm_get_temp(vm_env*);
+int vm_get_last_temp(vm_env*);
 
 #endif /* LIBVM_VM_H */

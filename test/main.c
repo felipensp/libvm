@@ -6,24 +6,20 @@
 
 int main(int argc, char **argv)
 {
-	int id1, id2, val1 = 1, val2 = 2, result;
+	int val1 = atoi(argv[1]), val2 = atoi(argv[2]);
 	vm_env env;
 
 	vm_init(&env);
-	id1 = vm_add_const(&env, INT, &val1);
-	id2 = vm_add_const(&env, INT, &val2);
-
-	result = vm_get_temp(&env);
 
 	vm_add_inst(&env, (vm_inst){
 		.opcode = OP_PLUS,
-		.op1 	= {CPOOL, id1},
-		.op2 	= {CPOOL, id2},
-		.result = result
+		.op1 	= {CPOOL, vm_add_const(&env, INT, &val1)},
+		.op2 	= {CPOOL, vm_add_const(&env, INT, &val2)},
+		.result = vm_get_temp(&env)
 	});
 
-	vm_add_inst(&env, (vm_inst) { OP_PRINT, {TEMP, result}});
-	vm_add_inst(&env, (vm_inst){ OP_HALT });
+	vm_add_inst(&env, (vm_inst){OP_PRINT, {TEMP, vm_get_last_temp(&env)}});
+	vm_add_inst(&env, (vm_inst){OP_HALT});
 
 	vm_run(&env);
 
