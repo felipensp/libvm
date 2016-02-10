@@ -1,20 +1,26 @@
 #include <stdio.h>
+#include <string.h>
 #include "vm.h"
 
 void vm_init(vm_env *env)
 {
-	env->cpool_count = 0;
-	env->insts_count = 0;
+	memset(env, 0, sizeof(vm_env));
 }
 
-int vm_add_constant(vm_env *env, int type, void *value)
+int vm_add_const(vm_env *env, int type, void *value)
 {
 	switch (type) {
 	case INT:
-		env->cpool[env->cpool_count] = (vm_cpool_entry) { .type = type, .value.vint = *(int*)value };
+		env->cpool[env->cpool_count] = (vm_value) {
+			.type = type,
+			.value.vint = *(int*)value
+		};
 		break;
 	case STRING:
-		env->cpool[env->cpool_count] = (vm_cpool_entry) { .type = type, .value.vstr = (char*)value };
+		env->cpool[env->cpool_count] = (vm_value) {
+			.type = type,
+			.value.vstr = (char*)value
+		};
 		break;
 	}
 
@@ -28,16 +34,27 @@ int vm_add_inst(vm_env *env, vm_inst inst)
 	return env->insts_count++;
 }
 
+int vm_get_temp(vm_env *env)
+{
+	return env->temps_count++;
+}
+
+vm_value *vm_get_temp_value(vm_env *env, int id)
+{
+	return &env->temps[id];
+}
+
 int vm_get_op_value(const vm_env *env, const vm_operand *op)
 {
 	switch (op->type) {
-		case CPOOL:
-			return env->cpool[op->value.id].value.vint;
-			break;
+	case CPOOL:
+		return env->cpool[op->value.id].value.vint;
+	case TEMP:
+		return env->temps[op->value.id].value.vint;
 	}
+
 	return -1;
 }
-
 
 void vm_run(vm_env *env)
 {
@@ -51,7 +68,12 @@ void vm_run(vm_env *env)
 	DISPATCH;
 
 	OP(PLUS):
-		printf("%d\n", vm_get_op_value(env, &OPCODE.op1) + vm_get_op_value(env, &OPCODE.op2));
+		vm_get_temp_value(env, OPCODE.result)->value.vint =
+			vm_get_op_value(env, &OPCODE.op1) + vm_get_op_value(env, &OPCODE.op2);
+	DISPATCH;
+
+	OP(PRINT):
+		printf("%d\n", vm_get_op_value(env, &OPCODE.op1));
 	DISPATCH;
 
 	OP(HALT): goto exit;

@@ -33,19 +33,15 @@
 
 #define CPOOL_MAX_SIZE 100 /* Constant pool max size */
 #define INSTS_MAX_SIZE 200 /* Instruction max size */
+#define TEMPS_MAX_SIZE 150 /* Temporary storage max size */
 
 typedef struct {
-	enum { CPOOL } type;
+	enum { CPOOL, TEMP } type;
 	union {
-		int id; /* For constant pool index */
+		int id;
 	} value;
+	int id;
 } vm_operand;
-
-typedef struct {
-	int opcode;
-	vm_operand op1;
-	vm_operand op2;
-} vm_inst;
 
 typedef struct {
 	enum { INT, DOUBLE, STRING } type;
@@ -54,31 +50,43 @@ typedef struct {
 		char *vstr;
 		void *vptr;
 	} value;
-} vm_cpool_entry;
+} vm_value;
 
 typedef struct {
-	vm_inst insts[INSTS_MAX_SIZE]; 			/* Program instructions */
-	vm_cpool_entry cpool[CPOOL_MAX_SIZE]; 	/* Constant pool */
+	int opcode;
+	vm_operand op1;
+	vm_operand op2;
+	int result;
+} vm_inst;
+
+typedef struct {
+	vm_inst insts[INSTS_MAX_SIZE]; 		/* Program instructions */
+	vm_value cpool[CPOOL_MAX_SIZE]; 	/* Constant pool */
+	vm_value temps[TEMPS_MAX_SIZE];		/* Temporary storage */
 	int insts_count;
 	int cpool_count;
+	int temps_count;
 } vm_env;
 
 #define OP_LABELS \
 	&&OP_S_SCOPE, \
 	&&OP_E_SCOPE, \
 	&&OP_PLUS, \
+	&&OP_PRINT, \
 	&&OP_HALT
 
 enum {
 	OP_S_SCOPE,
 	OP_E_SCOPE,
 	OP_PLUS,
+	OP_PRINT,
 	OP_HALT
 };
 
 
 void vm_init(vm_env*);
-int vm_add_constant(vm_env*, int, void*);
+int vm_add_const(vm_env*, int, void*);
 int vm_add_inst(vm_env*, vm_inst);
+int vm_get_temp(vm_env*);
 
 #endif /* LIBVM_VM_H */
