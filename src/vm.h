@@ -17,21 +17,22 @@
 
 #if LIBVM_GCC_VERSION > 0
 # define OP(name)    OP_##name
-# define OPCODES     const static void* labels[] = { OP_LABELS }; goto *labels[inst[pc].opcode]
-# define DISPATCH    ++pc; goto *labels[inst[pc].opcode]
+# define OPCODES     const static void* labels[] = { OP_LABELS }; goto *labels[env->insts[pc].opcode]
+# define DISPATCH    ++pc; goto *labels[env->insts[pc].opcode]
 # define END_OPCODES
-# define VM_GOTO(n)  pc = n; goto *labels[inst[pc].opcode]
+# define VM_GOTO(n)  pc = n; goto *labels[env->insts[pc].opcode]
 #else
 # define OP(name)    case OP_##name
-# define OPCODES     for (;;) { switch (inst[pc].opcode) {
+# define OPCODES     for (;;) { switch (env->insts[pc].opcode) {
 # define DISPATCH    ++pc; break
 # define END_OPCODES EMPTY_SWITCH_DEFAULT_CASE(); } }
 # define VM_GOTO(n)  pc = n; break
 #endif
 
-#define OPCODE    inst[pc]
+#define OPCODE    env->insts[pc]
 
 #define CPOOL_MAX_SIZE 100 /* Constant pool max size */
+#define INSTS_MAX_SIZE 200 /* Instruction max size */
 
 typedef struct {
 	enum { CPOOL } type;
@@ -56,8 +57,9 @@ typedef struct {
 } vm_cpool_entry;
 
 typedef struct {
-	vm_inst *insts; 						/* Program instructions */
+	vm_inst insts[INSTS_MAX_SIZE]; 			/* Program instructions */
 	vm_cpool_entry cpool[CPOOL_MAX_SIZE]; 	/* Constant pool */
+	int insts_count;
 	int cpool_count;
 } vm_env;
 
@@ -77,5 +79,6 @@ enum {
 
 void vm_init(vm_env*);
 int vm_add_constant(vm_env*, int, void*);
+int vm_add_inst(vm_env*, vm_inst);
 
 #endif /* LIBVM_VM_H */

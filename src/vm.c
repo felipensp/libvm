@@ -4,6 +4,7 @@
 void vm_init(vm_env *env)
 {
 	env->cpool_count = 0;
+	env->insts_count = 0;
 }
 
 int vm_add_constant(vm_env *env, int type, void *value)
@@ -20,6 +21,13 @@ int vm_add_constant(vm_env *env, int type, void *value)
 	return env->cpool_count++;
 }
 
+int vm_add_inst(vm_env *env, vm_inst inst)
+{
+	env->insts[env->insts_count] = inst;
+
+	return env->insts_count++;
+}
+
 int vm_get_op_value(const vm_env *env, const vm_operand *op)
 {
 	switch (op->type) {
@@ -31,7 +39,7 @@ int vm_get_op_value(const vm_env *env, const vm_operand *op)
 }
 
 
-void vm_run(vm_env *env, vm_inst *inst)
+void vm_run(vm_env *env)
 {
 	int pc = 0;
 	OPCODES;
