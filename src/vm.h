@@ -29,20 +29,53 @@
 # define VM_GOTO(n)  pc = n; break
 #endif
 
+#define OPCODE    inst[pc]
+
+#define CPOOL_MAX_SIZE 100 /* Constant pool max size */
+
+typedef struct {
+	enum { CPOOL } type;
+	union {
+		int id; /* For constant pool index */
+	} value;
+} vm_operand;
+
 typedef struct {
 	int opcode;
+	vm_operand op1;
+	vm_operand op2;
 } vm_inst;
 
+typedef struct {
+	enum { INT, DOUBLE, STRING } type;
+	union {
+		int vint;
+		char *vstr;
+		void *vptr;
+	} value;
+} vm_cpool_entry;
+
+typedef struct {
+	vm_inst *insts; 						/* Program instructions */
+	vm_cpool_entry cpool[CPOOL_MAX_SIZE]; 	/* Constant pool */
+	int cpool_count;
+} vm_env;
 
 #define OP_LABELS \
 	&&OP_S_SCOPE, \
 	&&OP_E_SCOPE, \
+	&&OP_PLUS, \
 	&&OP_HALT
 
 enum {
 	OP_S_SCOPE,
 	OP_E_SCOPE,
+	OP_PLUS,
 	OP_HALT
 };
+
+
+void vm_init(vm_env*);
+int vm_add_constant(vm_env*, int, void*);
 
 #endif /* LIBVM_VM_H */

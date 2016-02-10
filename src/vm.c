@@ -1,17 +1,49 @@
 #include <stdio.h>
 #include "vm.h"
 
-void vm_run(vm_inst *inst)
+void vm_init(vm_env *env)
+{
+	env->cpool_count = 0;
+}
+
+int vm_add_constant(vm_env *env, int type, void *value)
+{
+	switch (type) {
+	case INT:
+		env->cpool[env->cpool_count] = (vm_cpool_entry) { .type = type, .value.vint = *(int*)value };
+		break;
+	case STRING:
+		env->cpool[env->cpool_count] = (vm_cpool_entry) { .type = type, .value.vstr = (char*)value };
+		break;
+	}
+
+	return env->cpool_count++;
+}
+
+int vm_get_op_value(const vm_env *env, const vm_operand *op)
+{
+	switch (op->type) {
+		case CPOOL:
+			return env->cpool[op->value.id].value.vint;
+			break;
+	}
+	return -1;
+}
+
+
+void vm_run(vm_env *env, vm_inst *inst)
 {
 	int pc = 0;
 	OPCODES;
 
 	OP(S_SCOPE):
-		printf("start scope\n");
 	DISPATCH;
 
 	OP(E_SCOPE):
-		printf("end scope\n");
+	DISPATCH;
+
+	OP(PLUS):
+		printf("%d\n", vm_get_op_value(env, &OPCODE.op1) + vm_get_op_value(env, &OPCODE.op2));
 	DISPATCH;
 
 	OP(HALT): goto exit;
