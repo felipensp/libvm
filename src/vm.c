@@ -12,10 +12,10 @@ unsigned int vm_add_const(vm_env *env, int type, void *value)
 	env->cpool[env->cpool_count] = (vm_value) { .type = type };
 
 	switch (type) {
-	case INT: env->cpool[env->cpool_count].value.vint = *(int*)value; 		break;
-	case DBL: env->cpool[env->cpool_count].value.vdouble = *(double*)value;	break;
-	case STR: env->cpool[env->cpool_count].value.vstr = (char*)value; 		break;
-	case PTR: env->cpool[env->cpool_count].value.vptr = value; 				break;
+	case INT: env->cpool[env->cpool_count].value.vint = *(int*)value;       break;
+	case DBL: env->cpool[env->cpool_count].value.vdouble = *(double*)value; break;
+	case STR: env->cpool[env->cpool_count].value.vstr = (char*)value;       break;
+	case PTR: env->cpool[env->cpool_count].value.vptr = value;              break;
 	}
 
 	return env->cpool_count++;
