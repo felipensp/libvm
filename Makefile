@@ -10,7 +10,10 @@ INSTALLLIB=/lib
 INSTALLBIN=/usr/bin
 
 vmtest:	libvm
-	$(CC) -ovmtest -I$(SRC)/ test/main.c -L$(LIB)/ -lvm
+	$(CC) -fPIC -g -c -I$(SRC)/ -otest/main.o test/main.c
+	$(CC) -fPIC -g -c -I$(SRC)/ -otest/compiler.o test/compiler.c
+
+	$(CC) -ovmtest -I$(SRC)/ test/*.o -L$(LIB)/ -lvm
 
 libvm:
 	@mkdir -p $(BLD)
@@ -21,7 +24,7 @@ libvm:
 	ln -sf libvm.so.0.1.0 $(LIB)/libvm.so
 
 clean:
-	rm -rf vmtest $(LIB) $(BLD)/*.o $(LIB)/*
+	rm -rf vmtest $(LIB) $(BLD)/*.o $(LIB)/* test/*.o
 
 install:
 	cp $(LIB)/* $(INSTALLLIB)

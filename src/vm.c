@@ -7,39 +7,33 @@ void vm_init(vm_env *env)
 	memset(env, 0, sizeof(vm_env));
 }
 
-int vm_add_const(vm_env *env, int type, void *value)
+unsigned int vm_add_const(vm_env *env, int type, void *value)
 {
+	env->cpool[env->cpool_count] = (vm_value) { .type = type };
+
 	switch (type) {
-	case INT:
-		env->cpool[env->cpool_count] = (vm_value) {
-			.type = type,
-			.value.vint = *(int*)value
-		};
-		break;
-	case STRING:
-		env->cpool[env->cpool_count] = (vm_value) {
-			.type = type,
-			.value.vstr = (char*)value
-		};
-		break;
+	case INT: env->cpool[env->cpool_count].value.vint = *(int*)value; 		break;
+	case DBL: env->cpool[env->cpool_count].value.vdouble = *(double*)value;	break;
+	case STR: env->cpool[env->cpool_count].value.vstr = (char*)value; 		break;
+	case PTR: env->cpool[env->cpool_count].value.vptr = value; 				break;
 	}
 
 	return env->cpool_count++;
 }
 
-int vm_add_inst(vm_env *env, vm_inst inst)
+unsigned int vm_add_inst(vm_env *env, vm_inst inst)
 {
 	env->insts[env->insts_count] = inst;
 
 	return env->insts_count++;
 }
 
-int vm_get_temp(vm_env *env)
+unsigned int vm_get_temp(vm_env *env)
 {
 	return env->temps_count++;
 }
 
-int vm_get_last_temp(vm_env *env)
+unsigned int vm_get_last_temp(vm_env *env)
 {
 	return env->temps_count - 1;
 }
@@ -49,37 +43,28 @@ static inline vm_value *vm_get_temp_value(vm_env *env, int id)
 	return &env->temps[id];
 }
 
-static inline int vm_get_op_value(const vm_env *env, const vm_operand *op)
+static inline vm_value *vm_get_op_value(vm_env *env, const vm_operand *op)
 {
 	switch (op->type) {
-	case CPOOL:
-		return env->cpool[op->value.id].value.vint;
-	case TEMP:
-		return env->temps[op->value.id].value.vint;
+	case CONST:	return &env->cpool[op->value.id];
+	case TEMP:	return &env->temps[op->value.id];
+	default: 	break;
 	}
 
-	return -1;
+	return NULL;
 }
 
 void vm_run(vm_env *env)
 {
-	int pc = 0;
+	unsigned int pc = 0;
 	OPCODES;
 
-	OP(S_SCOPE):
-	DISPATCH;
+	OP(S_SCOPE): DISPATCH;
+	OP(E_SCOPE): DISPATCH;
 
-	OP(E_SCOPE):
-	DISPATCH;
-
-	OP(PLUS):
-		vm_get_temp_value(env, OPCODE.result)->value.vint =
-			vm_get_op_value(env, &OPCODE.op1) + vm_get_op_value(env, &OPCODE.op2);
-	DISPATCH;
-
-	OP(PRINT):
-		printf("%d\n", vm_get_op_value(env, &OPCODE.op1));
-	DISPATCH;
+	OP(PLUS): 	VM_CALL_HANDLER(); DISPATCH;
+	OP(PRINT): 	VM_CALL_HANDLER(); DISPATCH;
+	OP(JMP): 	VM_GOTO(OPCODE.op1.value.id);
 
 	OP(HALT): goto exit;
 
