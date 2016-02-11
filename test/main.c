@@ -25,11 +25,25 @@ void print_impl(VM_HANDLER_ARGS)
 
 int main(int argc, char **argv)
 {
+	int i;
 	vm_env env;
 
 	vm_init(&env);
 
 	compile_file(&env, argv[1]);
+
+	vm_add_inst(&env, (vm_inst){OP_HALT});
+
+	for (i = 0; i < env.insts_count; ++i) {
+		switch (env.insts[i].opcode) {
+		case OP_PRINT: env.insts[i].handler = print_impl; break;
+		case OP_PLUS:  env.insts[i].handler = plus_impl;  break;
+		default: break;
+		}
+	}
+
+	vm_run(&env);
+
 /*
 	int val1 = atoi(argv[1]), val2 = atoi(argv[2]);
 	vm_env env;
@@ -50,9 +64,7 @@ int main(int argc, char **argv)
 		.handler = print_impl
 	});
 
-	vm_add_inst(&env, (vm_inst){OP_HALT});
 
-	vm_run(&env);
 */
 	return 0;
 }

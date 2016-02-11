@@ -1,4 +1,5 @@
 ; LIBVM Assembly
 ;;;;;;;;;;;;;;;;
-plus $1 $2 #1
+
+plus $100 $200 #1
 print #1
