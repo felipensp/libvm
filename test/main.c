@@ -44,27 +44,5 @@ int main(int argc, char **argv)
 
 	vm_run(&env);
 
-/*
-	int val1 = atoi(argv[1]), val2 = atoi(argv[2]);
-	vm_env env;
-
-	vm_init(&env);
-
-	vm_add_inst(&env, (vm_inst){
-		.opcode  = OP_PLUS,
-		.op1 	 = {CONST, vm_add_const(&env, INT, &val1)},
-		.op2 	 = {CONST, vm_add_const(&env, INT, &val2)},
-		.result  = vm_get_temp(&env),
-		.handler = plus_impl
-	});
-
-	vm_add_inst(&env, (vm_inst){
-		.opcode  = OP_PRINT,
-		.op1 	 = {TEMP, vm_get_last_temp(&env)},
-		.handler = print_impl
-	});
-
-
-*/
 	return 0;
 }
