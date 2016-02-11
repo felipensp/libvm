@@ -65,3 +65,5 @@ int main(int argc, char **argv)
 	vm_run(&env);
 }
 ```
+
+For more example, see the compiler.c on test dir.
