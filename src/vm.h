@@ -88,16 +88,12 @@ typedef struct {
 /* LIBVM Opcodes */
 
 #define OP_LABELS 	\
-	&&OP_S_SCOPE, 	\
-	&&OP_E_SCOPE, 	\
 	&&OP_PLUS, 		\
 	&&OP_PRINT, 	\
 	&&OP_JMP, 		\
 	&&OP_HALT
 
 enum {
-	OP_S_SCOPE,
-	OP_E_SCOPE,
 	OP_PLUS,
 	OP_PRINT,
 	OP_JMP,

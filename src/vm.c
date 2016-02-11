@@ -59,9 +59,6 @@ void vm_run(vm_env *env)
 	unsigned int pc = 0;
 	OPCODES;
 
-	OP(S_SCOPE): DISPATCH;
-	OP(E_SCOPE): DISPATCH;
-
 	OP(PLUS): 	VM_CALL_HANDLER(); DISPATCH;
 	OP(PRINT): 	VM_CALL_HANDLER(); DISPATCH;
 	OP(JMP): 	VM_GOTO(OPCODE.op1.value.id);

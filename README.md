@@ -6,8 +6,7 @@ Register-based VM as C library
 
 | Opcode  | Description |
 | ------------- | ------------- |
-| OP_S_SCOPE | Starts a new scope context |
-| OP_E_SCOPE | Ends current scope context |
+| OP_PLUS | Sums two operands |
 | OP_PRINT | Prints something |
 | OP_JMP | Jumps to somewhere |
 | OP_HALT | Ends VM execution |
