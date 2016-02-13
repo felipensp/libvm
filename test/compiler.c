@@ -12,8 +12,11 @@ struct instruction {
 };
 
 const struct instruction instrs[] = {
-	{"plus",	OP_PLUS, 1, 1, 1},
-	{"print", 	OP_PRINT, 1, 0, 0},
+	{"add",		OP_ADD, 	1, 1, 1},
+	{"sub",		OP_SUB, 	1, 1, 1},
+	{"mult",	OP_MULT, 	1, 1, 1},
+	{"div",		OP_DIV, 	1, 1, 1},
+	{"print", 	OP_PRINT, 	1, 0, 0},
 	{NULL, 0}
 };
 
@@ -56,7 +59,10 @@ void compile_line(vm_env *env, char *line)
 	vm_inst new_inst;
 	const struct instruction *inst = find_inst(mnemonic);
 
-	if (inst == NULL) return;
+	if (inst == NULL) {
+		printf("Error: instruction `%s' not found\n", mnemonic);
+		exit(1);
+	}
 
 	memset(&new_inst, 0, sizeof(vm_inst));
 
@@ -92,7 +98,7 @@ void compile_file(vm_env *env, const char *filename)
 	}
 
 	while (getline(&line, &size, fp) != -1) {
-		if (line[0] == ';') continue;
+		if (line[0] == ';' || line[0] == '\n') continue;
 		compile_line(env, line);
 	}
 	free(line);
