@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 	vm_init(&env);
 
 	vm_add_inst(&env, (vm_inst){
-		.opcode  = OP_PLUS,
+		.opcode  = OP_ADD,
 		.op1 	 = {CONST, vm_add_const(&env, INT, &val1)},
 		.op2 	 = {CONST, vm_add_const(&env, INT, &val2)},
 		.result  = vm_get_temp(&env),
