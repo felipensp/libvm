@@ -6,7 +6,10 @@ Register-based VM as C library
 
 | Opcode  | Description |
 | ------------- | ------------- |
-| OP_PLUS | Sums two operands |
+| OP_ADD | Sums two operands |
+| OP_SUB | Subtracts two operands |
+| OP_MULT | Mutiplies two operands |
+| OP_DIV | Divides two operands |
 | OP_PRINT | Prints something |
 | OP_JMP | Jumps to somewhere |
 | OP_HALT | Ends VM execution |
